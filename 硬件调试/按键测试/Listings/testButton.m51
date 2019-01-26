@@ -1,0 +1,164 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/28/2017  08:12:53  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+F:\KEIL\C51\BIN\BL51.EXE .\Objects\STARTUP.obj, .\Objects\testButton.obj TO .\Objects\testButton PRINT (.\Listings\testB
+>> utton.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\STARTUP.obj (?C_STARTUP)
+  .\Objects\testButton.obj (TESTBUTTON)
+
+
+LINK MAP OF MODULE:  .\Objects\testButton (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?TESTBUTTON
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     002DH     UNIT         ?PR?MAIN?TESTBUTTON
+            CODE    0030H     002BH     UNIT         ?PR?WARNING?TESTBUTTON
+            CODE    005BH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\testButton (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?TESTBUTTON
+
+?PR?MAIN?TESTBUTTON
+  +--> ?PR?WARNING?TESTBUTTON
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\testButton (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:005BH         SEGMENT       ?C_C51STARTUP
+  I:0009H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:12:53  PAGE 2
+
+
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:005EH         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:005BH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:005BH         LINE#         133
+  C:005DH         LINE#         134
+  C:005EH         LINE#         135
+  C:005FH         LINE#         136
+  C:0061H         LINE#         185
+  C:0064H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        TESTBUTTON
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  D:0008H         PUBLIC        display_bit
+  B:00B0H.3       PUBLIC        sw1
+  B:00B0H.5       PUBLIC        sw2
+  B:00B0H.4       PUBLIC        sw3
+  C:0003H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:0090H.1       PUBLIC        ledcontrol
+  B:0090H.0       PUBLIC        buz
+  D:00C8H         PUBLIC        T2CON
+  C:0030H         PUBLIC        warning
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:0003H         LINE#         24
+  C:0003H         LINE#         25
+  C:0003H         LINE#         27
+  C:0003H         LINE#         28
+  C:0003H         LINE#         29
+  C:0006H         LINE#         30
+  C:0006H         LINE#         31
+  C:0009H         LINE#         32
+  C:000FH         LINE#         34
+  C:000FH         LINE#         35
+  C:0012H         LINE#         36
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:12:53  PAGE 3
+
+
+  C:0012H         LINE#         37
+  C:0015H         LINE#         38
+  C:001BH         LINE#         40
+  C:001BH         LINE#         42
+  C:001EH         LINE#         43
+  C:001EH         LINE#         44
+  C:0020H         LINE#         45
+  C:0020H         LINE#         46
+  C:0023H         LINE#         47
+  C:0023H         LINE#         48
+  C:0025H         LINE#         49
+  C:0025H         LINE#         51
+  C:0028H         LINE#         52
+  C:0028H         LINE#         53
+  C:002BH         LINE#         54
+  C:002BH         LINE#         55
+  C:002EH         LINE#         56
+  C:002EH         LINE#         58
+  C:002EH         LINE#         60
+  -------         ENDPROC       MAIN
+  -------         PROC          WARNING
+  -------         DO            
+  D:0006H         SYMBOL        m
+  D:0004H         SYMBOL        j
+  -------         ENDDO         
+  C:0030H         LINE#         64
+  C:0030H         LINE#         65
+  C:0030H         LINE#         67
+  C:0033H         LINE#         68
+  C:003EH         LINE#         69
+  C:003EH         LINE#         70
+  C:0043H         LINE#         71
+  C:0045H         LINE#         72
+  C:005AH         LINE#         73
+  C:005AH         LINE#         74
+  -------         ENDPROC       WARNING
+  -------         ENDMOD        TESTBUTTON
+
+Program Size: data=10.0 xdata=0 code=103
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

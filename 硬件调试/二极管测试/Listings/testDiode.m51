@@ -1,0 +1,173 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/28/2017  08:16:54  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+F:\KEIL\C51\BIN\BL51.EXE .\Objects\STARTUP.obj, .\Objects\testDiode.obj TO .\Objects\testDiode PRINT (.\Listings\testDio
+>> de.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\STARTUP.obj (?C_STARTUP)
+  .\Objects\testDiode.obj (TESTDIODE)
+  F:\KEIL\C51\LIB\C51S.LIB (?C?SLCMP)
+
+
+LINK MAP OF MODULE:  .\Objects\testDiode (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0008H     UNIT         ?DT?_DELAY?TESTDIODE
+            DATA    0010H     0001H     UNIT         ?DT?TESTDIODE
+            IDATA   0011H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0044H     UNIT         ?PR?_DELAY?TESTDIODE
+            CODE    0047H     002BH     UNIT         ?PR?WARNING?TESTDIODE
+            CODE    0072H     0023H     UNIT         ?PR?MAIN?TESTDIODE
+            CODE    0095H     0016H     UNIT         ?C?LIB_CODE
+            CODE    00ABH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\testDiode (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?TESTDIODE
+
+?PR?MAIN?TESTDIODE
+  +--> ?PR?WARNING?TESTDIODE
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\testDiode (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:00ABH         SEGMENT       ?C_C51STARTUP
+  I:0011H         SEGMENT       ?STACK
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:16:54  PAGE 2
+
+
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:00AEH         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:00ABH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:00ABH         LINE#         133
+  C:00ADH         LINE#         134
+  C:00AEH         LINE#         135
+  C:00AFH         LINE#         136
+  C:00B1H         LINE#         185
+  C:00B4H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        TESTDIODE
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  B:0090H.4       PUBLIC        ic_card_in
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:0003H         PUBLIC        _delay
+  D:00B8H         PUBLIC        IP
+  D:0010H         PUBLIC        display_bit
+  C:0072H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:0090H.1       PUBLIC        ledcontrol
+  B:0090H.0       PUBLIC        buz
+  D:00C8H         PUBLIC        T2CON
+  C:0047H         PUBLIC        warning
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:0072H         LINE#         19
+  C:0072H         LINE#         20
+  C:0072H         LINE#         22
+  C:0072H         LINE#         23
+  C:0072H         LINE#         24
+  C:0075H         LINE#         25
+  C:0075H         LINE#         26
+  C:0077H         LINE#         27
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:16:54  PAGE 3
+
+
+  C:007AH         LINE#         28
+  C:0080H         LINE#         29
+  C:0083H         LINE#         30
+  C:0085H         LINE#         31
+  C:0088H         LINE#         32
+  C:0088H         LINE#         33
+  C:008AH         LINE#         34
+  C:008DH         LINE#         35
+  C:0093H         LINE#         36
+  C:0093H         LINE#         38
+  -------         ENDPROC       MAIN
+  -------         PROC          _DELAY
+  D:0008H         SYMBOL        n
+  -------         DO            
+  D:000CH         SYMBOL        i
+  -------         ENDDO         
+  C:0003H         LINE#         43
+  C:000BH         LINE#         44
+  C:000BH         LINE#         46
+  C:002BH         LINE#         47
+  C:0046H         LINE#         48
+  -------         ENDPROC       _DELAY
+  -------         PROC          WARNING
+  -------         DO            
+  D:0006H         SYMBOL        m
+  D:0004H         SYMBOL        j
+  -------         ENDDO         
+  C:0047H         LINE#         51
+  C:0047H         LINE#         52
+  C:0047H         LINE#         54
+  C:004AH         LINE#         55
+  C:0055H         LINE#         56
+  C:0055H         LINE#         57
+  C:005AH         LINE#         58
+  C:005CH         LINE#         59
+  C:0071H         LINE#         60
+  C:0071H         LINE#         61
+  -------         ENDPROC       WARNING
+  -------         ENDMOD        TESTDIODE
+
+  -------         MODULE        ?C?SLCMP
+  C:0095H         PUBLIC        ?C?SLCMP
+  -------         ENDMOD        ?C?SLCMP
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DELAY?TESTDIODE
+
+Program Size: data=18.0 xdata=0 code=183
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)

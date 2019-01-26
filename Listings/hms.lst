@@ -1,0 +1,347 @@
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE HMS
+OBJECT MODULE PLACED IN .\Objects\hms.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE ..\×ÊÁÏ\»ùÓÚIC¿¨µÄÓÃµç¹ÜÀíÏµÍ³\ÏÂÎ»»ú\hms.c OPTIMIZE(8,SPEED) BROWSE DEBUG 
+                    -OBJECTEXTEND PRINT(.\Listings\hms.lst) TABS(2) OBJECT(.\Objects\hms.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <intrins.h>
+   3          #include <stdio.h>
+   4          #include <absacc.h>
+   5          /********************************³õÊ¼±äÁ¿¶¨Òå**********************/
+   6          #define ulong unsigned long //ºê¶¨Òå
+   7          #define uint unsigned int //ºê¶¨Òå
+   8          #define uchar unsigned char //ºê¶¨Òå
+   9          #define SEGMENT XBYTE[0xbfff] //¶ÎÂëµØÖ·
+  10          #define BIT_LED XBYTE[0x7fff] //Î»ÂëµØÖ·
+  11          bdata char com_data;
+  12          sbit mos_bit=com_data^7;
+  13          sbit low_bit=com_data^0;
+  14          sbit SCL_IC_CARD=P1^5; //24C01¿¨µÄ3½Å
+  15          sbit SDA_IC_CARD=P1^6; //24C01¿¨µÄ6½Å
+  16          sbit WP_IC_CARD =P1^7; //24C01¿¨µÄ2½Å
+  17          sbit WORK_LIGHT=P1^1; //¹¤×÷Ö¸Ê¾µÆ
+  18          sbit WARNING=P1^0; //¾¯¸æÉùÒô·¢ÉúÐÅºÅ
+  19          sbit Aa=P3^5;
+  20          sbit Bb=P3^4;
+  21          sbit Cc=P3^3;
+  22          unsigned Flag1=1;
+  23          unsigned int j=500;
+  24          unsigned char i;
+  25          unsigned char zdjs=0, jp;
+  26          unsigned char rd_24c01(char a);
+  27          unsigned char data display_buffer[20];
+  28          unsigned char tab1[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x67,0x77,0x7c,0x39,0x5e,0x79,0x71}; //
+             -¶¨ÒåÊýÂë¹ÜÏÔÊ¾Êý¾Ý±í
+  29          void delayms(unsigned int i); //ºÁÃëÑÓ³Ùº¯Êý
+  30          void delay1(uint z); //ÑÓÊ±º¯Êý1
+  31          void delay(int n); //ÑÓÊ±º¯Êý2
+  32          // del(yj); //ÑÓÊ±º¯Êý3
+  33          void displaytime(); //ÊýÂë¹ÜÉ¨ÃèÏÔÊ¾º¯Êý
+  34          void beep(); //»¶Ó­ÁåÉùº¯Êý
+  35          void dingdong(); //Êý¾Ý´«Êä³É¹¦ÌáÊ¾Òô
+  36          void baojing(); //±¨¾¯º¯ÊýÉùÃ÷
+  37          void wr_24c01(char a,char b); //¶¨ÒåÐ´º¯Êý
+  38          /*********************************Ö÷³ÌÐò²¿·Ö************************/
+  39          void main()
+  40          {
+  41   1                                  EA=1; //ÔÊÐíÖÐ¶ÏÔ´¹¤×÷
+  42   1      EX0=0; //½ûÖ¹Íâ²¿ÖÐ¶Ï
+  43   1      PS=1; //½«´®ÐÐ¿ÚÖÐ¶ÏÉèÎª¸ßÓÅÏÈ¼¶
+  44   1      WORK_LIGHT=0; //³õÊ¼Ö¸Ê¾µÆÁÁ
+  45   1      WARNING=1; //¹Ø±Õ±¨¾¯Æ÷
+  46   1      WARNING=0; //³ÌÐò³É¹¦ÔØÈëµ¥Æ¬»úÌáÊ¾Òô
+  47   1      //delayms(300);
+  48   1      WARNING=1;
+  49   1      while(1) //½øÈë³ÌÐòÑ­»·£¬µÈ´ý°´¼ü´¥·¢
+  50   1      {
+  51   2      if(Aa==0) //¶Á°´¼ü´¥3·¢Ê±
+  52   2      {
+  53   3      WORK_LIGHT=0; //¶ÁIC¿¨Ö¸Ê¾µÆÁÁ
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 2   
+
+  54   3      for (i=0;i<20;i++) //¶ÁÔ­Ê¼Êý¾Ý
+  55   3      {
+  56   4      display_buffer[i]=rd_24c01(i);
+  57   4      //delay(250);
+  58   4      }
+  59   3      if ((display_buffer[0]==0x31)&&(display_buffer[1]==0x31)&&(display_buffer[2]==0x31)&&(display_buffer[3]==0
+             -x31)
+  60   3      &&(display_buffer[4]==0x31)&&(display_buffer[5]==0x31)&&(display_buffer[6]==0x31)
+  61   3      &&(display_buffer[7]==0x31)&&(display_buffer[8]==0x31)&&(display_buffer[9]==0x31)) //ÅÐ¶Ï¿¨ºÅµÄ¸ßÊ®Î»ÊÇ·ñº
+             -Ï·¨
+  62   3      {
+  63   4      WORK_LIGHT=0; //Õý³£IC¿¨Ö¸Ê¾µÆÁÁ
+  64   4      for(j=300;j>0;j--) //ÏÔÊ¾¿¨ºÅµÄºóËÄÎ»£¬ÓÉj¿ØÖÆÁÁµÆÊ±¼ä
+  65   4      {
+  66   5      display_buffer[0]=display_buffer[19]-0x30; //½«Ê®Áù½øÖÆÊý×ª»»ÎªÊ®½øÖÆÊý¸øÊýÂë¹Ü½øÐÐ²é±íÏÔÊ¾
+  67   5      display_buffer[1]=display_buffer[18]-0x30;
+  68   5      display_buffer[2]=display_buffer[17]-0x30;
+  69   5      display_buffer[3]=display_buffer[16]-0x30;
+  70   5      displaytime();
+  71   5      }
+  72   4      BIT_LED=0; //¹Ø±ÕLEDµÆ
+  73   4      ES=0; //½ûÖ¹´®ÐÐ¿ÚÖÐ¶Ï
+  74   4      SCON=0x50; //ÉèÖÃ³É´®¿Ú¹¤×÷·½Ê½ÔÚ8Î»URT
+  75   4      TMOD=0x20; //ÉèÖÃT1Îª¿ÉÖØ×°8Î»¶¨Ê±Æ÷
+  76   4      TL1=0xFD; //256-FOSC/BTL/32/12 9600bps(11.0592MHz)
+  77   4      TH1=0xFD;
+  78   4      TR1=1; //¿ªÆô¶¨Ê±Æ÷
+  79   4      //delay(2000);
+  80   4      TI=0;
+  81   4      for(i=0;i<10;i++) //½«IC¿¨ÄÚÈÝËÍÖÁ´®¿Ú
+  82   4      {
+  83   5      SBUF=rd_24c01(i+10);
+  84   5      while(!TI);
+  85   5      TI=0;
+  86   5      //delay(100);
+  87   5      }
+  88   4      dingdong(); //Êý¾Ý´«Êä³É¹¦ÌáÊ¾Òô
+  89   4      //delayms(500);
+  90   4      WARNING=1; //¹Ø±Õ±¨¾¯
+  91   4      }
+  92   3      else //´¥·¢±¨¾¯×°ÖÃ
+  93   3      {
+  94   4      for(i=10;i>0;i--)
+  95   4      {
+  96   5      WORK_LIGHT=~WORK_LIGHT; //´íÎóÖ¸Ê¾µÆÁÁ
+  97   5      //delayms(100);
+  98   5      }
+  99   4      baojing(); //±¨¾¯Æ÷Ïì
+ 100   4      //delayms(500);
+ 101   4      WARNING=1; //¹Ø±Õ±¨¾¯
+ 102   4      BIT_LED=0;
+ 103   4      for(j=300;j>0;j--) //ÏÔÊ¾´íÎó±êÊ¾0000
+ 104   4      {
+ 105   5      display_buffer[0]=0; display_buffer[1]=0; display_buffer[2]=0; display_buffer[3]=0; displaytime();
+ 106   5      }
+ 107   4      BIT_LED=0;
+ 108   4      }
+ 109   3      if(Bb==0) //Ð´°´¼ü´¥·¢Ê±
+ 110   3      {
+ 111   4      Flag1=1;
+ 112   4      if(Bb==0)//·À¶¶¶¯
+ 113   4      {
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 3   
+
+ 114   5      WORK_LIGHT=1;//Ð´ÌáÊ¾µÆ
+ 115   5      SCON=0x50; //ÉèÖÃ³É´®¿Ú¹¤×÷·½Ê½ÔÚ8Î»URT
+ 116   5      TMOD=0x20; //ÉèÖÃT1Îª¿ÉÖØ×°8Î»¶¨Ê±Æ÷
+ 117   5      TL1=0xFD; //256-FOSC/BTL/32/12 9600bps(11.0592MHz)
+ 118   5      TH1=0xFD;
+ 119   5      TR1=1; //¿ªÆô¶¨Ê±Æ÷
+ 120   5      ES=0; //¹Ø±Õ´®¿ÚÖÐ¶Ï
+ 121   5      EA=1; //¿ª×ÜÖÐ¶Ï
+ 122   5      EX0=0; //½ûÖ¹Íâ²¿ÖÐ¶Ï
+ 123   5      //delayms(10);
+ 124   5      WP_IC_CARD =1;
+ 125   5      ES=1;
+ 126   5      i=0;
+ 127   5      WARNING=0; //Êý¾Ý³É¹¦Ð´ÈëÌáÊ¾Òô
+ 128   5      //delayms(500);
+ 129   5      WARNING=1; //¹Ø±Õ±¨¾¯
+ 130   5      while(Flag1); //µ±×Ó³ÌÐò´«ÊäÊý¾ÝÖÕÁËÊ±¿ØÖÆFlagÌø³öÑ­»·
+ 131   5      }
+ 132   4      }
+ 133   3      if(Cc==0) //Ë¢¿¨Ê±¿ÉÒÔ·ÅÒôÀÖ
+ 134   3      {
+ 135   4        beep();
+ 136   4        delayms(500);
+ 137   4        WARNING=1;
+ 138   4      } 
+ 139   3      }
+ 140   2      }
+ 141   1      }
+ 142          /*****************************×Ó³ÌÐò²¿·Ö******************* *************/
+ 143          void start() //Æô¶¯¶ÁÐ´Ê±Ðò
+ 144          {
+ 145   1      SDA_IC_CARD=1;
+ 146   1      SCL_IC_CARD=1;
+ 147   1      SDA_IC_CARD=0;
+ 148   1      SCL_IC_CARD=0;
+ 149   1      }
+ 150          void stop() //Í£Ö¹²Ù×÷
+ 151          {
+ 152   1      SDA_IC_CARD=0;
+ 153   1      SCL_IC_CARD=1;
+ 154   1      SDA_IC_CARD=1;
+ 155   1      }
+ 156          void ack() //Ó¦´ðº¯Êý
+ 157          {
+ 158   1      SCL_IC_CARD=1;
+ 159   1      SCL_IC_CARD=0;
+ 160   1      }
+ 161          void shift8(char a) //8Î»ÒÆÎ»Êä³ö
+ 162          {
+ 163   1      data unsigned char i;
+ 164   1      com_data=a;
+ 165   1      for(i=0;i<8;i++)
+ 166   1      {
+ 167   2      SDA_IC_CARD=mos_bit;
+ 168   2      SCL_IC_CARD=1;
+ 169   2      SCL_IC_CARD=0;
+ 170   2      com_data=com_data*2;
+ 171   2      }
+ 172   1      }
+ 173          unsigned char rd_24c01(char a) //¶ÁIC¿¨º¯Êý
+ 174          {
+ 175   1      data unsigned char i,command;
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 4   
+
+ 176   1      SDA_IC_CARD=1;
+ 177   1      SCL_IC_CARD=0;
+ 178   1      start();
+ 179   1      command=160;
+ 180   1      shift8(command);
+ 181   1      ack();
+ 182   1      shift8(a);
+ 183   1      ack();
+ 184   1      start();
+ 185   1      command=161;
+ 186   1      shift8(command);
+ 187   1      ack();
+ 188   1      SDA_IC_CARD=1;
+ 189   1      for(i=0;i<8;i++)
+ 190   1      {
+ 191   2      com_data=com_data*2;
+ 192   2      SCL_IC_CARD=1;
+ 193   2      low_bit=SDA_IC_CARD;
+ 194   2      SCL_IC_CARD=0;
+ 195   2      }
+ 196   1      stop();
+ 197   1      return(com_data);
+ 198   1      }
+ 199          void wr_24c01(char a,char b)
+ 200          {
+ 201   1        data unsigned char command;
+ 202   1        WP_IC_CARD=0;
+ 203   1        _nop_();
+ 204   1        SDA_IC_CARD=1;
+ 205   1        SCL_IC_CARD=0;
+ 206   1        start();
+ 207   1        command=160;
+ 208   1        shift8(command);
+ 209   1        ack();
+ 210   1        shift8(a);
+ 211   1        ack();
+ 212   1        shift8(b);
+ 213   1        ack();
+ 214   1        stop();
+ 215   1        _nop_();
+ 216   1        WP_IC_CARD=1;
+ 217   1      }
+ 218          void delay(int n) //ÑÓÊ±º¯Êý
+ 219          {
+ 220   1      int i;
+ 221   1      for (i=1;i<=n;i++){;}
+ 222   1      }
+ 223          void int_com(void) interrupt 4
+ 224          {
+ 225   1      display_buffer[i]=SBUF;
+ 226   1      while(!RI);
+ 227   1      RI=0;
+ 228   1      i=i+1;
+ 229   1      if(i>=10)
+ 230   1      { for(j=0;j<10;j++)
+ 231   2      {
+ 232   3      wr_24c01(j,0x31);
+ 233   3      delay(100);
+ 234   3      }
+ 235   2      for(j=10;j<20;j++)
+ 236   2      {
+ 237   3      wr_24c01(j,display_buffer[j-10]);
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 5   
+
+ 238   3      delay(100);
+ 239   3      }
+ 240   2      i=0;
+ 241   2      Flag1=0;
+ 242   2      }
+ 243   1      }
+ 244          void delayms(unsigned int i) //ºÁÃëÑÓ³Ùº¯Êý
+ 245          {
+ 246   1      unsigned int n;
+ 247   1      while(i--){
+ 248   2      for(n=0;n<125;n++);
+ 249   2      }
+ 250   1      }
+ 251          void displaytime() //ÊýÂë¹ÜÑ­»·ÏÔÊ¾º¯Êý
+ 252          {
+ 253   1      unsigned char e=0x01;
+ 254   1      unsigned int i;
+ 255   1      for(i=0;i<=3;i++)
+ 256   1      {
+ 257   2      BIT_LED=e;
+ 258   2      SEGMENT=tab1[display_buffer[i]];
+ 259   2      delayms(3);
+ 260   2      e<<=1;
+ 261   2      }
+ 262   1      }
+ 263          void beep(void)
+ 264          {
+ 265   1      unsigned int i=0;
+ 266   1      
+ 267   1      ulong ul;
+ 268   1      uint n;
+ 269   1      
+ 270   1      
+ 271   1      }
+*** WARNING C280 IN LINE 267 OF ..\×ÊÁÏ\»ùÓÚIC¿¨µÄÓÃµç¹ÜÀíÏµÍ³\ÏÂÎ»»ú\hms.c: 'ul': unreferenced local variable
+*** WARNING C280 IN LINE 268 OF ..\×ÊÁÏ\»ùÓÚIC¿¨µÄÓÃµç¹ÜÀíÏµÍ³\ÏÂÎ»»ú\hms.c: 'n': unreferenced local variable
+ 272          
+ 273          void dingdong() //Êý¾Ý´«Êä³É¹¦ÌáÊ¾Òô
+ 274          {
+ 275   1      uchar a,b,c; //¶¨ÒåÑ­»·ÓÃ±äÁ¿                                      
+ 276   1      i=1;
+ 277   1      while(i>0)//whileÑ­»·
+ 278   1      {
+ 279   2      i=i-1;
+ 280   2      for(a=200;a>0;a--)//Ñ­»·´ÎÊý
+ 281   2      {
+ 282   3      WARNING=0;//·äÃùÆ÷Ïì
+ 283   3      for(c=500;c>0;c--);//ÑÓÊ±
+ 284   3      WARNING=1;//·äÃùÆ÷²»Ïì
+ 285   3      for(c=500;c>0;c--);//ÑÓÊ±
+ 286   3      }
+ 287   2      for(b=200;b>0;b--)//Ñ­»·´ÎÊý
+ 288   2      {
+ 289   3      WARNING=0;//·äÃùÆ÷Ïì
+ 290   3      delay1(1.5);//µ÷ÓÃ1.5msÑÓÊ±×Ó³ÌÐò
+ 291   3      WARNING=1;//·äÃùÆ÷²»Ïì
+ 292   3      delay1(1.5);//µ÷ÓÃ1.5msÑÓÊ±×Ó³ÌÐò
+ 293   3      }
+ 294   2      delay1(2000);//µ÷ÓÃ2sÑÓÊ±×Ó³ÌÐò
+ 295   2      }
+ 296   1      }
+ 297          void delay1(uint z) //1msÑÓÊ±×Ó³ÌÐò£¬Í¨¹ýzÖµ¸Ä±äÑÓÊ±Ê±¼ä
+C51 COMPILER V9.56.0.0   HMS                                                               05/09/2017 21:31:37 PAGE 6   
+
+ 298          {
+ 299   1      uint x,y;
+ 300   1      for(x=z;x>0;x--)
+ 301   1      for(y=110;y>0;y--);
+ 302   1      }
+ 303          void baojing(void) //±¨¾¯ÌáÊ¾Òô
+ 304          {
+ 305   1      WARNING=0;
+ 306   1      delayms(3000);
+ 307   1      WARNING=1;
+ 308   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    867    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     44      11
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)

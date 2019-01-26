@@ -1,0 +1,174 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/28/2017  08:30:36  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+F:\KEIL\C51\BIN\BL51.EXE .\Objects\STARTUP.obj, .\Objects\testBuble.obj TO .\Objects\testBuble PRINT (.\Listings\testBub
+>> le.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\STARTUP.obj (?C_STARTUP)
+  .\Objects\testBuble.obj (TESTBUBLE)
+  F:\KEIL\C51\LIB\C51S.LIB (?C?SLCMP)
+
+
+LINK MAP OF MODULE:  .\Objects\testBuble (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000CH     UNIT         _DATA_GROUP_
+            DATA    0014H     0002H     UNIT         ?DT?TESTBUBLE
+            IDATA   0016H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     00BBH     UNIT         ?PR?MAIN?TESTBUBLE
+            CODE    00BEH     0048H     UNIT         ?PR?_DELAY?TESTBUBLE
+            CODE    0106H     0016H     UNIT         ?C?LIB_CODE
+            CODE    011CH     0014H     UNIT         ?CO?TESTBUBLE
+            CODE    0130H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\testBuble (?C_STARTUP)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?TESTBUBLE
+
+?PR?MAIN?TESTBUBLE             0008H    0004H
+  +--> ?CO?TESTBUBLE
+  +--> ?PR?_DELAY?TESTBUBLE
+
+?PR?_DELAY?TESTBUBLE           000CH    0008H
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\testBuble (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:30:36  PAGE 2
+
+
+  -------         MODULE        ?C_STARTUP
+  C:0130H         SEGMENT       ?C_C51STARTUP
+  I:0016H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:0133H         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:0130H         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:0130H         LINE#         133
+  C:0132H         LINE#         134
+  C:0133H         LINE#         135
+  C:0134H         LINE#         136
+  C:0136H         LINE#         185
+  C:0139H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        TESTBUBLE
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:00C2H         PUBLIC        _delay
+  D:00B8H         PUBLIC        IP
+  D:0014H         PUBLIC        display_bit
+  C:0003H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  C:011CH         PUBLIC        seg_code
+  D:0015H         PUBLIC        display_buffer
+  C:0126H         PUBLIC        seg_code_fra
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:000AH         SYMBOL        j
+  -------         ENDDO         
+  C:0003H         LINE#         18
+  C:0003H         LINE#         19
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/28/2017  08:30:36  PAGE 3
+
+
+  C:0003H         LINE#         21
+  C:000CH         LINE#         23
+  C:000CH         LINE#         24
+  C:000CH         LINE#         25
+  C:0013H         LINE#         26
+  C:0019H         LINE#         27
+  C:001CH         LINE#         28
+  C:0022H         LINE#         29
+  C:0029H         LINE#         31
+  C:002EH         LINE#         32
+  C:002EH         LINE#         33
+  C:003EH         LINE#         34
+  C:0042H         LINE#         35
+  C:0049H         LINE#         36
+  C:005CH         LINE#         38
+  C:006EH         LINE#         39
+  C:006EH         LINE#         40
+  C:007EH         LINE#         41
+  C:0082H         LINE#         42
+  C:0085H         LINE#         43
+  C:008BH         LINE#         45
+  C:0090H         LINE#         46
+  C:0090H         LINE#         47
+  C:0097H         LINE#         48
+  C:009DH         LINE#         49
+  C:00A1H         LINE#         51
+  C:00B4H         LINE#         52
+  -------         ENDPROC       MAIN
+  C:00BEH         SYMBOL        L?0021
+  -------         PROC          L?0020
+  -------         ENDPROC       L?0020
+  C:00BEH         SYMBOL        L?0021
+  -------         PROC          _DELAY
+  D:000CH         SYMBOL        n
+  -------         DO            
+  D:0010H         SYMBOL        i
+  -------         ENDDO         
+  C:00C2H         LINE#         60
+  C:00CAH         LINE#         61
+  C:00CAH         LINE#         63
+  C:0105H         LINE#         64
+  -------         ENDPROC       _DELAY
+  -------         ENDMOD        TESTBUBLE
+
+  -------         MODULE        ?C?SLCMP
+  C:0106H         PUBLIC        ?C?SLCMP
+  -------         ENDMOD        ?C?SLCMP
+
+Program Size: data=23.0 xdata=0 code=316
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

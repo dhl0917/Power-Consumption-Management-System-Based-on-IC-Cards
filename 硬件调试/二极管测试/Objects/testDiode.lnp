@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\testDiode.obj" 
+TO ".\Objects\testDiode" 
+PRINT(".\Listings\testDiode.m51") RAMSIZE(256) 

@@ -1,0 +1,10 @@
+F:\电设\项目\上位机\test\test\bin\Debug\test.exe.config
+F:\电设\项目\上位机\test\test\bin\Debug\test.exe
+F:\电设\项目\上位机\test\test\bin\Debug\test.pdb
+F:\电设\项目\上位机\test\test\obj\Debug\test.csprojResolveAssemblyReference.cache
+F:\电设\项目\上位机\test\test\obj\Debug\test.Form1.resources
+F:\电设\项目\上位机\test\test\obj\Debug\test.Properties.Resources.resources
+F:\电设\项目\上位机\test\test\obj\Debug\test.csproj.GenerateResource.Cache
+F:\电设\项目\上位机\test\test\obj\Debug\test.exe
+F:\电设\项目\上位机\test\test\obj\Debug\test.pdb
+F:\电设\项目\上位机\test\test\obj\Debug\test.login.resources

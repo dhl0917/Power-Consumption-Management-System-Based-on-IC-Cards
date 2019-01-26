@@ -1,0 +1,34 @@
+C51 COMPILER V9.56.0.0   SERIAL_INITIAL                                                    04/28/2017 08:40:06 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE SERIAL_INITIAL
+OBJECT MODULE PLACED IN .\Objects\serial_initial.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE serial_initial.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\serial_initial.lst) TABS(2) OBJECT(.\Objects\serial_initial.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #include<stdio.h>
+   3          void serial_initial(void)
+   4          {
+   5   1      SCON=0X52;
+   6   1      TMOD=0X20;
+   7   1      TH1=0XF3;
+   8   1      TR1=1;
+   9   1      }
+  10             
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     12    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

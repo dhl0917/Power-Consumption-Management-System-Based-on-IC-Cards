@@ -1,0 +1,603 @@
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE MYIC
+OBJECT MODULE PLACED IN .\Objects\myic.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE myic\myic.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\my
+                    -ic.lst) TABS(2) OBJECT(.\Objects\myic.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <intrins.h>
+   3          #include <stdio.h>
+   4          #include <absacc.h>
+   5          
+   6          //初始变量定义
+   7          #define ulong unsigned long 
+   8          #define uint unsigned int 
+   9          #define uchar unsigned char 
+  10          #define SEGMENT XBYTE[0xbfff] //段码地址
+  11          #define BIT_LED XBYTE[0x7fff] //位码地址
+  12          bdata char com_data;
+  13          sbit mos_bit=com_data^7;
+  14          sbit low_bit=com_data^0;
+  15          
+  16          sbit SCL_IC_CARD=P1^5; //24C01卡的3脚
+  17          sbit SDA_IC_CARD=P1^6; //24C01卡的6脚
+  18          sbit WP_IC_CARD =P1^7; //24C01卡的2脚
+  19          sbit CHECK_IC_CARD =P1^4; //24C01卡的1脚
+  20          
+  21          sbit D2=P1^1; //工作指示灯
+  22          sbit WARNING=P1^0; //警告声音发生信号
+  23          
+  24          sbit sw1=P3^3; //sw1
+  25          sbit sw2=P3^5; //sw2
+  26          sbit sw3=P3^4; //sw3
+  27          
+  28          unsigned char data display_buffer[4];
+  29          unsigned char data card_ID[20];
+  30          unsigned char data order[20];
+  31          unsigned char data send[20];
+  32          unsigned char code tab1[20]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0xbf,0x86,0xdb,0xcf,0xe6,0x
+             -ed,0xfd,0x87,0xff,0xef};//定义数码管显示数据表 
+  33          unsigned char i;
+  34          unsigned char j;
+  35          unsigned char data temp[2];
+  36          int p;
+  37          int x=0;
+  38          //unsigned Flag1=1;
+  39          unsigned flag=1;
+  40          unsigned cflag=0;
+  41          
+  42          void delayms(unsigned int i); //毫秒延迟函数
+  43          //void delay1(uint z); //延时函数1
+  44          void delay(int n); //延时函数2
+  45          void display(); //数码管扫描显示函数
+  46          
+  47          //void beep(); //欢迎铃声函数
+  48          //void success(); //数据传输成功提示音
+  49          //void warning(); //报警函数声明
+  50          void wr_24c01(char a,char b); //定义写函数
+  51          unsigned char rd_24c01(char a);//定义读函数
+  52          
+  53          
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 2   
+
+  54          /*****************************主函数部分*******************************/
+  55          void main()
+  56          {
+  57   1          EA=1; //允许中断源工作
+  58   1          EX0=0; //禁止外部中断
+  59   1          PS=1; //将串行口中断设为高优先级
+  60   1        
+  61   1          D2=0;//D2亮
+  62   1          WARNING=1;//关报警
+  63   1          BIT_LED=0;  //关数码管
+  64   1      //    WARNING=0; //程序成功载入单片机提示音
+  65   1      //    WARNING=1;
+  66   1      
+  67   1        while(1)
+  68   1        {
+  69   2        
+  70   2          while(CHECK_IC_CARD==0)   //未插卡时闪烁“0000”
+  71   2          {
+  72   3            BIT_LED=0xff;;  
+  73   3            SEGMENT=0x3F;
+  74   3            delayms(500);
+  75   3            BIT_LED=0x00;
+  76   3            delayms(500);
+  77   3            flag=1;
+  78   3          }
+  79   2          BIT_LED=0;  //关数码管
+  80   2        
+  81   2        
+  82   2        
+  83   2        while(CHECK_IC_CARD!=0) //插卡执行
+  84   2          {
+  85   3            
+  86   3      /*      for (i=0;i<10;i++) //读原始数据,10个元素
+  87   3                {
+  88   3                  card_ID[i]=rd_24c01(i);
+  89   3                  D2=~D2; //D2闪
+  90   3                }
+  91   3                D2=0; //D2亮
+  92   3      */
+  93   3                
+  94   3      //        WP_IC_CARD=1;
+  95   3      //          wr_24c01(0,0x00);
+  96   3                delay(250);
+  97   3      //          wr_24c01(1,0x00);
+  98   3                delay(250);
+  99   3      //          wr_24c01(2,0x22);
+ 100   3                delay(250);
+ 101   3      //          wr_24c01(3,0x33);
+ 102   3                delay(250);
+ 103   3      //          wr_24c01(4,0x44);
+ 104   3                delay(250);
+ 105   3      //          wr_24c01(5,0x55);
+ 106   3                delay(250);
+ 107   3      //          wr_24c01(6,0x33);
+ 108   3                delay(250);
+ 109   3      //          wr_24c01(7,0x44); 
+ 110   3                delay(3000);
+ 111   3                
+ 112   3                
+ 113   3          //      wr_24c01(8,0x55);
+ 114   3            //    delay(250);
+ 115   3            //    wr_24c01(9,0x66);
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 3   
+
+ 116   3            //    delay(1500);
+ 117   3        
+ 118   3                
+ 119   3        /*    if((card_ID[0]==0x00)&&(card_ID[1]==0x31)&&(card_ID[2]==0x31)&&(card_ID[3]==0x31))  //判断校验位（1 2 
+             -3号元素）是否合法，判断挂失位（0号元素）是否挂失
+ 120   3            {
+ 121   3                
+ 122   3                BIT_LED=0; //关闭LED灯
+ 123   3                for(j=300;j>0;j--) //显示AAAA
+ 124   3                      {
+ 125   3                          display_buffer[0]=10; 
+ 126   3                          display_buffer[1]=10;
+ 127   3                          display_buffer[2]=10;
+ 128   3                          display_buffer[3]=10;
+ 129   3                          display();
+ 130   3                      }
+ 131   3                BIT_LED=0; //关闭LED灯
+ 132   3          */
+ 133   3      
+ 134   3          //发送卡号到串口        
+ 135   3              if(flag==1)
+ 136   3                
+ 137   3              {
+ 138   4                
+ 139   4                for(i=0;i<6;i++) //读卡号
+ 140   4                    {
+ 141   5                        send[i]=rd_24c01(i);
+ 142   5                    }
+ 143   4                send[6]=0x33;   //加校验码
+ 144   4                send[7]=0x44;
+ 145   4                
+ 146   4                
+ 147   4                ES=0; //禁止串行口中断
+ 148   4                SCON=0x50; //设置成串口工作方式
+ 149   4                TMOD=0x20; //设置T1为可重装8位定时器
+ 150   4                TL1=0xFD; //波特率=9600
+ 151   4                TH1=0xFD;
+ 152   4                TR1=1; //开启定时器
+ 153   4                TI=0;
+ 154   4                
+ 155   4              
+ 156   4                
+ 157   4                
+ 158   4                  for(i=0;i<8;i++) //序列发送
+ 159   4                    {
+ 160   5                      //  SBUF=rd_24c01(i);
+ 161   5                      SBUF=send[i];
+ 162   5                        while(!TI);
+ 163   5                        TI=0;
+ 164   5                        D2=~D2;//D2闪烁
+ 165   5                    }
+ 166   4                    
+ 167   4                    D2=1;//D2灭
+ 168   4              }
+ 169   3                      
+ 170   3          //从串口接受信息
+ 171   3      
+ 172   3                  BIT_LED=0;
+ 173   3              
+ 174   3                  SCON=0x50;                                                //设置成串口工作方式
+ 175   3                  TMOD=0x20;                                                //设置T1为可重装8位定时器
+ 176   3                  TL1=0xFD;                                                 //波特率=9600
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 4   
+
+ 177   3                  TH1=0xFD; 
+ 178   3                  TR1=1;                                                   //开启定时器                         
+             -                                
+ 179   3                  EA=1;                                                     //开总中断
+ 180   3                  EX0=0;                                                    //禁止外部中断  
+ 181   3                  ES=1; 
+ 182   3              
+ 183   3              if((order[6]==0x33)&&(order[7]==0x44))  //验证校验位
+ 184   3              {
+ 185   4                
+ 186   4                if(order[0]==0x00)    //无动作
+ 187   4                  { 
+ 188   5                    ;
+ 189   5                  }
+ 190   4                if(order[0]==0xff)    //停止发送
+ 191   4                  {
+ 192   5                    flag=0;
+ 193   5                    order[0]=0x00;
+ 194   5            //        order[6]==0x00;
+ 195   5            //        order[7]==0x00;
+ 196   5                  }
+ 197   4                  if(order[0]==0xee)  //继续发送
+ 198   4                  {
+ 199   5                    flag=1;
+ 200   5                    order[0]=0x00;
+ 201   5            
+ 202   5                  }
+ 203   4                  if(order[0]==0x11)  //声光报警
+ 204   4                  {
+ 205   5                    flag=0;
+ 206   5                    
+ 207   5                    for(i=0;i<10;i++)
+ 208   5                    {
+ 209   6                      D2=~D2;
+ 210   6                      WARNING=~WARNING;
+ 211   6                      delayms(100);
+ 212   6                    }
+ 213   5                    
+ 214   5                    D2=1; //D2灭
+ 215   5                    WARNING=1;//WARNING关
+ 216   5                    order[0]=0x00;
+ 217   5                    order[6]=0x00;
+ 218   5                    order[7]=0x00;
+ 219   5                  }
+ 220   4                  
+ 221   4                  if(order[0]==0xaa)  //立cflag显示余额
+ 222   4                  {
+ 223   5                    cflag=1;
+ 224   5                  order[0]=0x00;
+ 225   5                    
+ 226   5                  }
+ 227   4                  
+ 228   4          /*        if(order[0]==0xbb)
+ 229   4                  {
+ 230   4                    cflag=0;
+ 231   4                    order[0]=0xee;
+ 232   4                    
+ 233   4                  }
+ 234   4            */
+ 235   4                  if(order[0]==0x33)  //写卡
+ 236   4                  { 
+ 237   5                  WP_IC_CARD=1;
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 5   
+
+ 238   5                  wr_24c01(0,0x00);
+ 239   5                  delay(250);
+ 240   5                  wr_24c01(1,0x00);
+ 241   5                  delay(250);
+ 242   5                  wr_24c01(2,order[1]);
+ 243   5                  delay(250);
+ 244   5                  wr_24c01(3,order[2]);
+ 245   5                  delay(250);
+ 246   5                  wr_24c01(4,order[3]);
+ 247   5                  delay(250);
+ 248   5                  wr_24c01(5,order[4]);
+ 249   5                  delay(250);
+ 250   5                  wr_24c01(6,0x33);
+ 251   5                  delay(250);
+ 252   5                  wr_24c01(7,0x44); 
+ 253   5                  delay(3000);
+ 254   5                  order[0]=0x00;
+ 255   5                  }
+ 256   4                  
+ 257   4                }
+ 258   3              else
+ 259   3              {
+ 260   4                ;
+ 261   4              }
+ 262   3              
+ 263   3              while(cflag==1)           //显示余额
+ 264   3              {
+ 265   4                
+ 266   4        /*          BIT_LED=0;
+ 267   4                  SCON=0x50;                                                //设置成串口工作方式在8位URT
+ 268   4                  TMOD=0x20;                                                //设置T1为可重装8位定时器
+ 269   4                  TL1=0xFD;                                                 //256-FOSC/BTL/32/12  9600bps(11.059
+             -2MHz)
+ 270   4                  TH1=0xFD; 
+ 271   4                  TR1=1;                                                   //开启定时器                         
+             -                                
+ 272   4                  EA=1;                                                     //开总中断
+ 273   4                  EX0=0;                                                    //禁止外部中断  
+ 274   4                  ES=1; 
+ 275   4      */                    
+ 276   4                if(sw1)
+ 277   4                {
+ 278   5                  for(j=300;j>0;j--) //显示余额
+ 279   5                      {
+ 280   6                          display_buffer[0]=order[1]-0x30; 
+ 281   6                          display_buffer[1]=order[2]-0x30+10;   //小数点
+ 282   6                          display_buffer[2]=order[3]-0x30;
+ 283   6                          display_buffer[3]=order[4]-0x30;
+ 284   6                          display();
+ 285   6                      }
+ 286   5                }
+ 287   4                else                  //按下停止显示
+ 288   4                {
+ 289   5                  cflag=0;
+ 290   5                  order[0]=0xee;
+ 291   5          //        order[0]=0xee;
+ 292   5          //        order[6]=0x33;
+ 293   5            //        order[7]=0x44;
+ 294   5                }
+ 295   4                
+ 296   4              }
+ 297   3            BIT_LED=0; //关闭LED灯
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 6   
+
+ 298   3              if(!sw2)              //按下恢复显示
+ 299   3              {
+ 300   4                cflag=1;
+ 301   4          //      order[0]=0xbb;
+ 302   4          //        order[6]=0x33;
+ 303   4          //          order[7]=0x44;
+ 304   4              }
+ 305   3              else
+ 306   3              {
+ 307   4                ;
+ 308   4              }
+ 309   3              if(!sw3)                //按下显示卡号后四位
+ 310   3              {
+ 311   4                  if(rd_24c01(4)>0x09)
+ 312   4                  {
+ 313   5                    temp[0]=rd_24c01(4)-0x10;
+ 314   5                    temp[1]=0x01;
+ 315   5                  }
+ 316   4                  else{
+ 317   5                    temp[0]=rd_24c01(4);
+ 318   5                    temp[1]=0x00;
+ 319   5                  
+ 320   5                  }
+ 321   4                
+ 322   4                for(j=300;j>0;j--) //显示卡号后四位
+ 323   4                      {
+ 324   5                          display_buffer[0]= rd_24c01(5)-0x00;
+ 325   5                          display_buffer[1]= 0;
+ 326   5                          display_buffer[2]= temp[0];
+ 327   5                          display_buffer[3]= temp[1];
+ 328   5                          display();
+ 329   5                      }
+ 330   4              
+ 331   4              }
+ 332   3              else{
+ 333   4                ;
+ 334   4              }
+ 335   3      
+ 336   3      
+ 337   3      /*            if(order[0]==0xff){p=1;}  
+ 338   3                  else{p=0;}
+ 339   3      //            p=1;
+ 340   3                if(p==1)
+ 341   3                {
+ 342   3      
+ 343   3                  for(i=0;i<6;i++) //将IC卡内容送至串口
+ 344   3                  {
+ 345   3              
+ 346   3                        TI=0;
+ 347   3                      D2=~D2;
+ 348   3                      delayms(300);
+ 349   3                      WARNING=~WARNING;
+ 350   3                      delayms(300);
+ 351   3                    }
+ 352   3                }
+ 353   3                    
+ 354   3      */              
+ 355   3            
+ 356   3            }
+ 357   2      /*      else  //不合法，声光报警，显示FFFF
+ 358   2            {
+ 359   2              for(i=10;i>0;i--)
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 7   
+
+ 360   2                  {
+ 361   2                      D2=~D2; //错误指示灯亮
+ 362   2                    //  WARNING=~WARNING; //报警
+ 363   2                      delayms(100);
+ 364   2      
+ 365   2                  }
+ 366   2                  D2=1; //关D2
+ 367   2                  WARNING=1;  //关报警
+ 368   2                  BIT_LED=0;
+ 369   2                  for(j=300;j>0;j--) //显示错误标示FFFF
+ 370   2                    {
+ 371   2                      display_buffer[0]=15; display_buffer[1]=15; display_buffer[2]=15; display_buffer[3]=15; 
+ 372   2                      display();
+ 373   2                    }
+ 374   2                  BIT_LED=0;
+ 375   2              }
+ 376   2            }
+ 377   2      */
+ 378   2          }
+ 379   1          
+ 380   1      }
+ 381          
+ 382          
+ 383          
+ 384          
+ 385          
+ 386          
+ 387          
+ 388          
+ 389          
+ 390          
+ 391          /*****************************子函数部分****************** *************/
+ 392          void start() //启动读写时序
+ 393          {
+ 394   1      SDA_IC_CARD=1;
+ 395   1      SCL_IC_CARD=1;
+ 396   1      SDA_IC_CARD=0;
+ 397   1      SCL_IC_CARD=0;
+ 398   1      }
+ 399          void stop() //停止操作
+ 400          {
+ 401   1      SDA_IC_CARD=0;
+ 402   1      SCL_IC_CARD=1;
+ 403   1      SDA_IC_CARD=1;
+ 404   1      }
+ 405          void ack() //应答函数
+ 406          {
+ 407   1      SCL_IC_CARD=1;
+ 408   1      SCL_IC_CARD=0;
+ 409   1      }
+ 410          void shift8(char a) //8位移位输出
+ 411          {
+ 412   1      data unsigned char i;
+ 413   1      com_data=a;
+ 414   1      for(i=0;i<8;i++)
+ 415   1      {
+ 416   2      SDA_IC_CARD=mos_bit;
+ 417   2      SCL_IC_CARD=1;
+ 418   2      SCL_IC_CARD=0;
+ 419   2      com_data=com_data*2;
+ 420   2      }
+ 421   1      }
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 8   
+
+ 422          unsigned char rd_24c01(char a) //读IC卡函数
+ 423          {
+ 424   1      data unsigned char i,command;
+ 425   1      SDA_IC_CARD=1;
+ 426   1      SCL_IC_CARD=0;
+ 427   1      start();
+ 428   1      command=160;
+ 429   1      shift8(command);
+ 430   1      ack();
+ 431   1      shift8(a);
+ 432   1      ack();
+ 433   1      start();
+ 434   1      command=161;
+ 435   1      shift8(command);
+ 436   1      ack();
+ 437   1      SDA_IC_CARD=1;
+ 438   1      for(i=0;i<8;i++)
+ 439   1      {
+ 440   2      com_data=com_data*2;
+ 441   2      SCL_IC_CARD=1;
+ 442   2      low_bit=SDA_IC_CARD;
+ 443   2      SCL_IC_CARD=0;
+ 444   2      }
+ 445   1      stop();
+ 446   1      return(com_data);
+ 447   1      }
+ 448          void wr_24c01(char a,char b) //写IC卡函数
+ 449          {
+ 450   1        data unsigned char command;
+ 451   1        WP_IC_CARD=0;
+ 452   1        _nop_();
+ 453   1        SDA_IC_CARD=1;
+ 454   1        SCL_IC_CARD=0;
+ 455   1        start();
+ 456   1        command=160;
+ 457   1        shift8(command);
+ 458   1        ack();
+ 459   1        shift8(a);
+ 460   1        ack();
+ 461   1        shift8(b);
+ 462   1        ack();
+ 463   1        stop();
+ 464   1        _nop_();
+ 465   1        WP_IC_CARD=1;
+ 466   1      }
+ 467          void delay(int n) //延时函数
+ 468          {
+ 469   1      int i;
+ 470   1      for (i=1;i<=n;i++){;}
+ 471   1      }
+ 472          void int_com(void) interrupt 4
+ 473          {
+ 474   1      
+ 475   1        if(RI)
+ 476   1        {
+ 477   2          
+ 478   2          order[x]=SBUF;
+ 479   2          x++;
+ 480   2          if(x>7)
+ 481   2          {
+ 482   3            x=0;
+ 483   3          }
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 9   
+
+ 484   2          RI=0;
+ 485   2        
+ 486   2        }
+ 487   1      
+ 488   1      }
+ 489          void delayms(unsigned int i) //毫秒延迟函数
+ 490          {
+ 491   1      unsigned int n;
+ 492   1      while(i--){
+ 493   2      for(n=0;n<125;n++);
+ 494   2      }
+ 495   1      }
+ 496          void display() //数码管循环显示函数
+ 497          {
+ 498   1      unsigned char e=0x01;
+ 499   1      unsigned int i;
+ 500   1      for(i=0;i<=3;i++)
+ 501   1      {
+ 502   2      BIT_LED=e;
+ 503   2      SEGMENT=tab1[display_buffer[i]];
+ 504   2      delayms(3);
+ 505   2      e<<=1;
+ 506   2      }
+ 507   1      }
+ 508          /*
+ 509          void beep(void)
+ 510          {
+ 511          unsigned int i=0;
+ 512          
+ 513          ulong ul;
+ 514          uint n;
+ 515          
+ 516          
+ 517          }*/
+ 518          
+ 519          /*void success() //数据传输成功提示音
+ 520          {
+ 521          uchar a,b,c; //定义循环用变量                                      
+ 522          i=1;
+ 523          while(i>0)//while循环
+ 524          {
+ 525          i=i-1;
+ 526          for(a=200;a>0;a--)//循环次数
+ 527          {
+ 528          WARNING=0;//蜂鸣器响
+ 529          for(c=500;c>0;c--);//延时
+ 530          WARNING=1;//蜂鸣器不响
+ 531          for(c=500;c>0;c--);//延时
+ 532          }
+ 533          for(b=200;b>0;b--)//循环次数
+ 534          {
+ 535          WARNING=0;//蜂鸣器响
+ 536          delay1(1.5);//调用1.5ms延时子程序
+ 537          WARNING=1;//蜂鸣器不响
+ 538          delay1(1.5);//调用1.5ms延时子程序
+ 539          }
+ 540          delay1(2000);//调用2s延时子程序
+ 541          }
+ 542          }*/
+ 543          /*void delay1(uint z) //1ms延时子程序，通过z值改变延时时间
+ 544          {
+ 545          uint x,y;
+C51 COMPILER V9.56.0.0   MYIC                                                              05/20/2017 15:59:49 PAGE 10  
+
+ 546          for(x=z;x>0;x--)
+ 547          for(y=110;y>0;y--);
+ 548          }*/
+ 549          /*
+ 550          void warning(void) //报警提示音
+ 551          {
+ 552          WARNING=0;
+ 553          delayms(3000);
+ 554          WARNING=1;
+ 555          }*/
+ 556          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    853    ----
+   CONSTANT SIZE    =     20    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     77       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

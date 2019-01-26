@@ -1,0 +1,24 @@
+C51 COMPILER V9.56.0.0   ___________________A_                                             05/06/2017 20:47:08 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE ___________________A_
+OBJECT MODULE PLACED IN .\Objects\扩展串行口举例(连续A).obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE 扩展串行口的测试程序\扩展串行口举例(连续A).c OPTIMIZE(8,SPEED) BROWSE DEBUG
+                    - OBJECTEXTEND PRINT(.\Listings\扩展串行口举例(连续A).lst) TABS(2) OBJECT(.\Objects\扩展串行口举例(连续A).obj)
+
+line level    source
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     84    ----
+   CONSTANT SIZE    =      9    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

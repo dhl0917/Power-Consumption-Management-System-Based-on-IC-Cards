@@ -1,0 +1,91 @@
+C51 COMPILER V9.56.0.0   LIGHTBULBTEST                                                     04/23/2017 22:30:15 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE LIGHTBULBTEST
+OBJECT MODULE PLACED IN .\Objects\lightbulbtest.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE lightbulbtest.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\lightbulbtest.lst) TABS(2) OBJECT(.\Objects\lightbulbtest.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <intrins.h>
+   3          #include <stdio.h>
+   4          #include <absacc.h>
+   5          
+   6          #define f     11.0592
+   7          #define BUFF_SIZE  17
+   8          #define SEGMENT XBYTE[0XBFFF]
+   9          #define BIT   XBYTE[0X7FFF]
+  10          
+  11          unsigned char code seg_code[]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,
+  12                          0x07,0x7F,0x67};
+  13          unsigned char d[6] _at_ 0x50;
+  14          unsigned char data display_bit;       //ledÎ»Âë
+  15          unsigned char data display_buffer;    //led¶ÎÂë
+  16          void delay(long n);
+  17          
+  18          void main()
+  19          {
+  20   1        
+  21   1        int i=0,j=0;
+  22   1        display_buffer=seg_code[8];
+  23   1        SEGMENT=display_buffer;
+  24   1        display_bit=0x0f;
+  25   1        BIT= display_bit;
+  26   1        delay(50000);
+  27   1        while(1)
+  28   1        {
+  29   2      
+  30   2            display_bit=0x0f;
+  31   2            BIT= display_bit;
+  32   2           for(i=0;i<10;i++)
+  33   2          {
+  34   3            display_buffer=seg_code[i];
+  35   3            SEGMENT=display_buffer;
+  36   3            delay(10000);
+  37   3          }
+  38   2              
+  39   2          for(j=0;j<10;j++)
+  40   2          {
+  41   3            display_buffer=seg_code[j];
+  42   3            SEGMENT=display_buffer;
+  43   3            display_bit=0x08;
+  44   3            BIT= display_bit;
+  45   3      
+  46   3            for(i=0;i<4;i++)
+  47   3            {
+  48   4              delay(3000);
+  49   4              display_bit=display_bit>>1;
+  50   4              BIT= display_bit;
+  51   4      
+  52   4            }
+  53   3          } 
+  54   2          
+C51 COMPILER V9.56.0.0   LIGHTBULBTEST                                                     04/23/2017 22:30:15 PAGE 2   
+
+  55   2      
+  56   2        }
+  57   1      }
+  58          
+  59          
+  60          
+  61          void delay(long n)
+  62          {
+  63   1      long i;
+  64   1      for (i=1;i<=n;i++){;}
+  65   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    267    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2      12
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

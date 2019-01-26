@@ -1,0 +1,156 @@
+C51 COMPILER V9.56.0.0   TESTIC                                                            04/28/2017 08:50:18 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE TESTIC
+OBJECT MODULE PLACED IN .\Objects\testIC.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE testIC.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\testI
+                    -C.lst) TABS(2) OBJECT(.\Objects\testIC.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #include<stdio.h>
+   3          #include<intrins.h>
+   4          #include<absacc.h>
+   5          
+   6          extern serial_initial();
+   7          sbit SCL_IC_CARD=P1^5;
+   8          sbit SDA_IC_CARD=P1^6;
+   9          sbit WP_IC_CARD=P1^7;
+  10          
+  11          
+  12          
+  13          bdata char com_data;
+  14          sbit mos_bit=com_data^7;
+  15          sbit low_bit=com_data^0;
+  16          
+  17          void delay(int n);
+  18          unsigned char rd_24c01(char a);
+  19          void wr_24c01(char a,char b);
+  20          void main()
+  21          {
+  22   1        unsigned char i;
+  23   1        serial_initial();
+  24   1        WP_IC_CARD=1;
+  25   1              
+  26   1        //write
+  27   1            wr_24c01(2,0x56);
+  28   1            delay(250);
+  29   1        
+  30   1            wr_24c01(1,0x34);
+  31   1            delay(250);
+  32   1        
+  33   1            wr_24c01(0,0x12);
+  34   1            delay(250);
+  35   1        
+  36   1      
+  37   1        
+  38   1        //read
+  39   1        printf("\nRead the data: ");
+  40   1        for(i=0;i<=2;i++)
+  41   1        {
+  42   2            printf("%bX",rd_24c01(i));
+  43   2            delay(250);
+  44   2        }
+  45   1        
+  46   1      }
+  47          void start()
+  48          {
+  49   1        SDA_IC_CARD=1;
+  50   1        SCL_IC_CARD=1;
+  51   1        SDA_IC_CARD=0;
+  52   1        SCL_IC_CARD=0;
+  53   1      }
+  54          void stop()
+C51 COMPILER V9.56.0.0   TESTIC                                                            04/28/2017 08:50:18 PAGE 2   
+
+  55          {
+  56   1        SDA_IC_CARD=0;
+  57   1        SCL_IC_CARD=1;
+  58   1        SDA_IC_CARD=1;
+  59   1      }
+  60          void ack()
+  61          {
+  62   1        SCL_IC_CARD=1;
+  63   1        SCL_IC_CARD=0;
+  64   1      }
+  65          void shift8(char a)
+  66          {
+  67   1        data unsigned char i;
+  68   1        com_data=a;
+  69   1        for(i=0;i<8;i++)
+  70   1        {
+  71   2          SDA_IC_CARD=mos_bit;
+  72   2          SCL_IC_CARD=1;
+  73   2          SCL_IC_CARD=0;
+  74   2          com_data=com_data*2;
+  75   2        }
+  76   1      }
+  77          
+  78          unsigned char rd_24c01(char a)
+  79          {
+  80   1        data unsigned char i,command;
+  81   1        SDA_IC_CARD=1;
+  82   1        SCL_IC_CARD=0;
+  83   1        start();
+  84   1        command=160;
+  85   1        shift8(160);
+  86   1        ack();
+  87   1        shift8(a);
+  88   1        ack();
+  89   1        start();
+  90   1        command=161;
+  91   1        shift8(161);
+  92   1        ack();
+  93   1        SDA_IC_CARD=1;
+  94   1        for(i=0;i<8;i++)
+  95   1        {
+  96   2          com_data=com_data*2;
+  97   2          SCL_IC_CARD=1;
+  98   2          low_bit=SDA_IC_CARD;
+  99   2          SCL_IC_CARD=0;
+ 100   2        }
+ 101   1        stop();
+ 102   1        return(com_data);
+ 103   1      }
+ 104          
+ 105          void wr_24c01(char a,char b)
+ 106          {
+ 107   1        data unsigned char command;
+ 108   1        WP_IC_CARD=0;
+ 109   1        _nop_();
+ 110   1        SDA_IC_CARD=1;
+ 111   1        SCL_IC_CARD=0;
+ 112   1        start();
+ 113   1        command=160;
+ 114   1        shift8(160);
+ 115   1        ack();
+ 116   1        shift8(a);
+C51 COMPILER V9.56.0.0   TESTIC                                                            04/28/2017 08:50:18 PAGE 3   
+
+ 117   1        ack();
+ 118   1        shift8(b);
+ 119   1        ack();
+ 120   1        stop();
+ 121   1        _nop_();
+ 122   1        WP_IC_CARD=1;
+ 123   1      }
+ 124          void delay(int n)
+ 125          {
+ 126   1        int i;
+ 127   1        for(i=1;i<=n;i++){;}
+ 128   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    253    ----
+   CONSTANT SIZE    =     21    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

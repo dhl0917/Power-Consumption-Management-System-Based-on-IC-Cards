@@ -1,0 +1,133 @@
+C51 COMPILER V9.56.0.0   UART                                                              05/06/2017 21:29:41 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN .\Objects\uart.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE ..\×ÊÁÏ\µçÆøË¶21-»ÆÓêÞ±Â½Î°·å-»ùÓÚIC¿¨µÄ¸öÈËÐÅÏ¢¹ÜÀí¼°½É·ÑÏµÍ³\µ÷ÊÔ·½°¸\Ó²¼
+                    -þµ÷ÊÔ\´®¿Ú²âÊÔ\uart.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\uart.lst) TABS(2) OBJECT(.\Objects\ua
+                    -rt.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #define uint unsigned  int
+   3          #define uchar unsigned char 
+   4          
+   5          
+   6          uchar buffer[17]="+1004501011100.00";
+   7          
+   8          
+   9          void delayms (uint ms)
+  10          {
+  11   1        uint i;
+  12   1        while (ms--)
+  13   1        {
+  14   2          for(i-0;i<120;i++);
+  15   2        }
+  16   1      }
+  17          
+  18          void send_char(uchar i)
+  19          {
+  20   1        SBUF=i;
+  21   1        while(!TI);
+  22   1        TI=0;
+  23   1      }
+  24          
+  25          
+  26          uchar receive_char(void)
+  27          {
+  28   1          uchar tmp;
+  29   1        tmp=SBUF;
+  30   1        while(!RI);
+  31   1        RI=0;
+  32   1        return tmp;
+  33   1      }
+  34          
+  35          
+  36          
+  37          
+  38          void send_str(uchar *s)
+  39          {
+  40   1        while(*s!='\0')
+  41   1        {
+  42   2          send_char(*s);
+  43   2          s++;
+  44   2          delayms(5);
+  45   2        }
+  46   1      }
+  47          
+  48          
+  49          void receive_str(void)
+  50          {
+  51   1          int i;
+  52   1      
+  53   1        for(i=0;i<5;i++)
+C51 COMPILER V9.56.0.0   UART                                                              05/06/2017 21:29:41 PAGE 2   
+
+  54   1        {
+  55   2            
+  56   2          buffer[i]=receive_char( );
+  57   2          
+  58   2          delayms(50);
+  59   2      
+  60   2        }
+  61   1      }
+  62          
+  63          
+  64          void init(void)
+  65          {
+  66   1        SCON=0x50;
+  67   1        PCON=0X00;       //²¨ÌØÂÊ²»¼Ó±¶
+  68   1        TMOD=0X20;       //¶¨Ê±Æ÷1·½Ê½2
+  69   1        TH1=0XFD;        //11.0592M¾§Õñ£¬9600²¨ÌØÂÊ
+  70   1        TL1=0XFD;
+  71   1        TI=0;
+  72   1        TR1=1;         //Æô¶¯¶¨Ê±Æ÷
+  73   1       // EA=1;        //¿ªÖÐ¶Ï
+  74   1      //  ES=1; 
+  75   1      }
+  76          
+  77          
+  78          
+  79          void main(void)
+  80          { 
+  81   1      
+  82   1          init();
+  83   1      
+  84   1        while(1)
+  85   1        {
+  86   2         delayms(200);
+  87   2         receive_str();
+  88   2         delayms(200);
+  89   2         send_str( buffer );
+  90   2        //send_str("+1004501011100.00");
+  91   2      
+  92   2      
+  93   2        //p=receive_char();
+  94   2        //delayms(200);
+  95   2      
+  96   2         //send_char(p);
+  97   2         //send_char(p+1);
+  98   2         //send_char(p+2);
+  99   2      
+ 100   2      
+ 101   2        delayms(50);
+ 102   2        }
+ 103   1      
+ 104   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    163    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     17       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V9.56.0.0   UART                                                              05/06/2017 21:29:41 PAGE 3   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

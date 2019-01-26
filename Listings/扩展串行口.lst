@@ -1,0 +1,147 @@
+C51 COMPILER V9.56.0.0   __________                                                        05/06/2017 20:47:08 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE __________
+OBJECT MODULE PLACED IN .\Objects\扩展串行口.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE 扩展串行口的测试程序\扩展串行口.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTE
+                    -ND PRINT(.\Listings\扩展串行口.lst) TABS(2) OBJECT(.\Objects\扩展串行口.obj)
+
+line level    source
+
+   1          #include <at89x52.h>
+   2          #include <stdio.h>
+   3          #include <absacc.h>
+   4          #include <intrins.h>
+   5          #define fosc    11.0592       //单位为MHz,时钟频率决定后，定时器最大定时间为
+   6                              //65536*(12/fosc),约为71mS.TN<=65536*12/fosc
+   7                              //(TN小于等于60397，即EBEDH).定时器1定时时间
+   8                              //(Tx<=65536*12/fosc=60397us)
+   9          
+  10          #define adj -17             //用以调整波特率，是具体情况取值
+  11          extern bit RIx,TIx;           //,TIME_FLAG,error;
+  12          unsigned char thx,tlx;
+  13          unsigned bak_TCON,bak_TMOD,bak_IE,bak_IP,bak_TH0,bak_TL0;
+  14          void UART_initial(unsigned int x);
+  15          void send(unsigned char x);
+  16          signed int receiv();
+  17          void restore();
+  18          void wait_bit();
+  19          
+  20          
+  21          sbit TXD1=P1^3;
+  22          sbit RXD1=P1^2;
+  23          sbit test=P2^0;
+  24          
+  25          void UART_initial(unsigned int x)
+  26          {
+  27   1        bak_TCON=TCON;
+  28   1        bak_TMOD=TMOD;
+  29   1        bak_IE=IE;
+  30   1        bak_IP=IP;
+  31   1        bak_TH0=TH0;
+  32   1        bak_TL0=TL0;
+  33   1        TR0=0;                //定时/计数器0停止工作
+  34   1        TMOD=(TMOD & 0XF0) | 0x01;      //不影响此前对TMOD的操作，定时器0为16为定时模式
+  35   1        x=-(((1000000/x)/2)*fosc/12+adj); //取波特率二分之一周期作为定时时间
+  36   1        TH0=x/256;
+  37   1        TL0=x%256;
+  38   1        thx=TH0;
+  39   1        tlx=TL0;
+  40   1        RXD1=1;               //设置为输入
+  41   1      }
+  42          void send(unsigned char x)
+  43          {   unsigned char i;
+  44   1          TXD1=0;               //起始位 
+  45   1          wait_bit();           //起始位的定时时间到
+  46   1          for(i=0;i<=7;i++)
+  47   1            {
+  48   2            TXD1=x & 0x01;
+  49   2            x=x>>1;
+  50   2            wait_bit();         //一位的定时时间到
+  51   2            }
+  52   1          TXD1=1;               //停止位
+  53   1          wait_bit();           //停止位的定时时间到
+  54   1          TIx=1;              //置发送完成标志
+C51 COMPILER V9.56.0.0   __________                                                        05/06/2017 20:47:08 PAGE 2   
+
+  55   1      }
+  56          void wait_bit()
+  57          {
+  58   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  59   1          while(!TF0);          //第一次定时时间到
+  60   1          TR0=0;
+  61   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  62   1          while(!TF0);          //第二次定时时间到
+  63   1          TR0=0;
+  64   1      }
+  65          signed int receiv()
+  66          {   unsigned char temp,i,x;
+  67   1      //起始位检测开始---------------------------------------------------------
+  68   1          while(RXD1);          //等待起始位
+  69   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  70   1          while(!TF0);          //第一次定时时间到
+  71   1          TR0=0;
+  72   1          test=1;
+  73   1          temp=(char)RXD1;
+  74   1          test=0;
+  75   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  76   1          while(!TF0);          //起始位时间到
+  77   1          TR0=0;            
+  78   1          if(temp==1) return(-1);     //不是合格的起始位，返回-1
+  79   1      //起始位检测结束---------------------------------------------------------
+  80   1      //8位数据接收开始--------------------------------------------------------
+  81   1          for(i=0;i<=7;i++)
+  82   1          {
+  83   2            TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  84   2            while(!TF0);          //第一次定时时间到
+  85   2            TR0=0;
+  86   2            test=1;
+  87   2            temp=RXD1;
+  88   2            test=0;
+  89   2            x=x>>1;
+  90   2            if(RXD1) x=x | 0x80;
+  91   2            TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  92   2            while(!TF0);          //一个完整位时间到
+  93   2            TR0=0;      
+  94   2          }
+  95   1      //8位数据接收完毕--------------------------------------------------------
+  96   1      //停止位检测开始---------------------------------------------------------
+  97   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+  98   1          while(!TF0);          //第一次定时时间到
+  99   1          TR0=0;
+ 100   1          test=1;
+ 101   1          temp=RXD1;            //在停止位四分之二时间处读引脚
+ 102   1          test=0;
+ 103   1          TH0=thx;TL0=tlx;TF0=0;TR0=1;
+ 104   1          while(!TF0);          //停止位时间到
+ 105   1          TR0=0;                //
+ 106   1          if(temp!=1) return(-1);
+ 107   1      //停止位检测完毕---------------------------------------------------------
+ 108   1          RIx=1;                //置接收就绪标志
+ 109   1          return(x);
+ 110   1      }
+ 111          void restore()
+ 112          {
+ 113   1        TCON=bak_TCON;
+ 114   1        TMOD=bak_TMOD;
+ 115   1        IE=bak_IE;
+ 116   1        IP=bak_IP;
+C51 COMPILER V9.56.0.0   __________                                                        05/06/2017 20:47:08 PAGE 3   
+
+ 117   1        TH0=bak_TH0;
+ 118   1        TL0=bak_TL0;
+ 119   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    391    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     14       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

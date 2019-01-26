@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\testButton.obj" 
+TO ".\Objects\testButton" 
+PRINT(".\Listings\testButton.m51") RAMSIZE(256) 

@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\myic.obj" 
+TO ".\Objects\firstblood" 
+PRINT(".\Listings\firstblood.m51") RAMSIZE(256) 

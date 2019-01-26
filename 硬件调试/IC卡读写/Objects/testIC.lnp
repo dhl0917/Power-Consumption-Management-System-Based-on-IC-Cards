@@ -1,0 +1,5 @@
+".\Objects\STARTUP.obj",
+".\Objects\testIC.obj",
+".\Objects\serial_initial.obj" 
+TO ".\Objects\testIC" 
+PRINT(".\Listings\testIC.m51") RAMSIZE(256) 

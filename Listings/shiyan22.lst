@@ -1,0 +1,156 @@
+C51 COMPILER V9.56.0.0   SHIYAN22                                                          04/27/2017 23:37:32 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE SHIYAN22
+OBJECT MODULE PLACED IN .\Objects\shiyan22.obj
+COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE C:\Users\DHL\Desktop\ICka\shiyan22.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTE
+                    -XTEND PRINT(.\Listings\shiyan22.lst) TABS(2) OBJECT(.\Objects\shiyan22.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #include<stdio.h>
+   3          #include<intrins.h>
+   4          #include<absacc.h>
+   5          
+   6          extern serial_initial();
+   7          sbit SCL_IC_CARD=P1^5;
+   8          sbit SDA_IC_CARD=P1^6;
+   9          sbit WP_IC_CARD=P1^7;
+  10          
+  11          
+  12          bdata char com_data;
+  13          sbit mos_bit=com_data^7;
+  14          sbit low_bit=com_data^0;
+  15          
+  16          void delay(int n);
+  17          unsigned char rd_24c01(char a);
+  18          void wr_24c01(char a,char b);
+  19          main()
+  20          {
+  21   1        unsigned char i;
+  22   1        serial_initial();
+  23   1        WP_IC_CARD=1;
+  24   1              
+  25   1        //write
+  26   1            wr_24c01(2,0x56);
+  27   1            delay(250);
+  28   1        
+  29   1            wr_24c01(1,0x34);
+  30   1            delay(250);
+  31   1        
+  32   1            wr_24c01(0,0x12);
+  33   1            delay(250);
+  34   1        
+  35   1      
+  36   1        
+  37   1        //read
+  38   1        printf("\nRead the data: ");
+  39   1        for(i=0;i<=2;i++)
+  40   1        {
+  41   2            printf("%bX",rd_24c01(i));
+  42   2            delay(250);
+  43   2        }
+  44   1        
+  45   1      }
+  46          void start()
+  47          {
+  48   1        SDA_IC_CARD=1;
+  49   1        SCL_IC_CARD=1;
+  50   1        SDA_IC_CARD=0;
+  51   1        SCL_IC_CARD=0;
+  52   1      }
+  53          void stop()
+  54          {
+C51 COMPILER V9.56.0.0   SHIYAN22                                                          04/27/2017 23:37:32 PAGE 2   
+
+  55   1        SDA_IC_CARD=0;
+  56   1        SCL_IC_CARD=1;
+  57   1        SDA_IC_CARD=1;
+  58   1      }
+  59          void ack()
+  60          {
+  61   1        SCL_IC_CARD=1;
+  62   1        SCL_IC_CARD=0;
+  63   1      }
+  64          void shift8(char a)
+  65          {
+  66   1        data unsigned char i;
+  67   1        com_data=a;
+  68   1        for(i=0;i<8;i++)
+  69   1        {
+  70   2          SDA_IC_CARD=mos_bit;
+  71   2          SCL_IC_CARD=1;
+  72   2          SCL_IC_CARD=0;
+  73   2          com_data=com_data*2;
+  74   2        }
+  75   1      }
+  76          
+  77          unsigned char rd_24c01(char a)
+  78          {
+  79   1        data unsigned char i,command;
+  80   1        SDA_IC_CARD=1;
+  81   1        SCL_IC_CARD=0;
+  82   1        start();
+  83   1        command=160;
+  84   1        shift8(160);
+  85   1        ack();
+  86   1        shift8(a);
+  87   1        ack();
+  88   1        start();
+  89   1        command=161;
+  90   1        shift8(161);
+  91   1        ack();
+  92   1        SDA_IC_CARD=1;
+  93   1        for(i=0;i<8;i++)
+  94   1        {
+  95   2          com_data=com_data*2;
+  96   2          SCL_IC_CARD=1;
+  97   2          low_bit=SDA_IC_CARD;
+  98   2          SCL_IC_CARD=0;
+  99   2        }
+ 100   1        stop();
+ 101   1        return(com_data);
+ 102   1      }
+ 103          
+ 104          void wr_24c01(char a,char b)
+ 105          {
+ 106   1        data unsigned char command;
+ 107   1        WP_IC_CARD=0;
+ 108   1        _nop_();
+ 109   1        SDA_IC_CARD=1;
+ 110   1        SCL_IC_CARD=0;
+ 111   1        start();
+ 112   1        command=160;
+ 113   1        shift8(160);
+ 114   1        ack();
+ 115   1        shift8(a);
+ 116   1        ack();
+C51 COMPILER V9.56.0.0   SHIYAN22                                                          04/27/2017 23:37:32 PAGE 3   
+
+ 117   1        shift8(b);
+ 118   1        ack();
+ 119   1        stop();
+ 120   1        _nop_();
+ 121   1        WP_IC_CARD=1;
+ 122   1      }
+ 123          void delay(int n)
+ 124          {
+ 125   1        int i;
+ 126   1        for(i=1;i<=n;i++){;}
+ 127   1      }
+*** WARNING C290 IN LINE 45 OF C:\Users\DHL\Desktop\ICka\shiyan22.c: missing return value
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    253    ----
+   CONSTANT SIZE    =     21    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
